@@ -17,7 +17,7 @@ import {
   setDailyBest,
   setProfile,
   setSoundMuted
-} from "./storage.js?v=20260325a";
+} from "./storage.js?v=20260325b";
 import {
   authenticateWithSiwe,
   claimMilestoneReward,
@@ -32,7 +32,7 @@ import {
   shareScore,
   submitScore,
   watchWallet
-} from "./base-hooks.js?v=20260325a";
+} from "./base-hooks.js?v=20260325b";
 
 function hash(text) {
   let h = 0;
@@ -570,23 +570,29 @@ function getClaimUiState(context) {
     if (claim.mintStatus === MINT_STATUS.minted) {
       const mintedToken = claim.mintedTokenId || claim.tokenId;
       const txSnippet = claim.mintTxHash ? ` Tx ${claim.mintTxHash.slice(0, 10)}...` : "";
+      const mintedSuffix = claim.mintTxHash
+        ? ""
+        : " Already minted onchain earlier for this wallet (no new tx).";
       if (context?.nextMilestone) {
         return {
-          message: `${milestone.label} minted (#${mintedToken}). ${context.nextMilestone.label} unlocks at stage ${context.nextMilestone.stage}.${txSnippet}`,
+          message: `${milestone.label} minted (#${mintedToken}). ${context.nextMilestone.label} unlocks at stage ${context.nextMilestone.stage}.${txSnippet}${mintedSuffix}`,
           buttonText: "Milestone Minted",
           disabled: true
         };
       }
       return {
-        message: `${milestone.label} minted (#${mintedToken}).${txSnippet}`,
+        message: `${milestone.label} minted (#${mintedToken}).${txSnippet}${mintedSuffix}`,
         buttonText: "Milestone Minted",
         disabled: true
       };
     }
 
     if (claim.mintStatus === MINT_STATUS.failed) {
+      const reason = typeof claim.mintError === "string" && claim.mintError.trim()
+        ? ` Reason: ${claim.mintError.trim()}.`
+        : "";
       return {
-        message: `${milestone.label} synced but mint failed. Retry sync to refresh mint state.`,
+        message: `${milestone.label} synced but mint failed.${reason} Retry sync to refresh mint state.`,
         buttonText: "Retry Mint Sync",
         disabled: false
       };
@@ -608,8 +614,11 @@ function getClaimUiState(context) {
   }
 
   if (claim.status === CLAIM_STATUS.failedSync) {
+    const reason = typeof claim.lastSyncError === "string" && claim.lastSyncError.trim()
+      ? ` (${claim.lastSyncError.trim()})`
+      : "";
     return {
-      message: `${milestone.label} saved locally. Sync failed, tap to retry.`,
+      message: `${milestone.label} saved locally. Sync failed${reason}, tap to retry.`,
       buttonText: "Retry Milestone Sync",
       disabled: false
     };
