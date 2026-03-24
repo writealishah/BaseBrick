@@ -17,7 +17,7 @@ import {
   setDailyBest,
   setProfile,
   setSoundMuted
-} from "./storage.js?v=20260324b";
+} from "./storage.js?v=20260325a";
 import {
   authenticateWithSiwe,
   claimMilestoneReward,
@@ -32,7 +32,7 @@ import {
   shareScore,
   submitScore,
   watchWallet
-} from "./base-hooks.js";
+} from "./base-hooks.js?v=20260325a";
 
 function hash(text) {
   let h = 0;
@@ -159,6 +159,19 @@ function isBaseChain(chainId) {
 
 function getDisplayName(profile) {
   return normalizeName(profile.customName) || normalizeName(profile.resolvedName) || shortAddress(profile.address) || "Guest";
+}
+
+function formatFailureReason(reason = "") {
+  if (!reason) return "unknown-error";
+  return String(reason).trim().replace(/_/g, "-").replace(/[^a-z0-9-]/gi, "").toLowerCase();
+}
+
+function getFailureMessage(result, fallback) {
+  const apiMessage = typeof result?.message === "string" ? result.message.trim() : "";
+  if (apiMessage) return apiMessage;
+  const reason = formatFailureReason(result?.reason || "");
+  if (!reason) return fallback;
+  return `${fallback} (${reason}).`;
 }
 
 function isPracticeCheckpointRun(result) {
@@ -764,8 +777,13 @@ async function authenticateFlow(reason = "verify your profile") {
       statement: `Authorize BaseBrick to ${reason}.`
     });
     if (!authResult.ok) {
-      toast("Authentication failed");
-      return { ok: false, reason: authResult.reason || "auth-failed" };
+      const message = getFailureMessage(authResult, "Authentication failed");
+      toast(message);
+      return {
+        ok: false,
+        reason: authResult.reason || "auth-failed",
+        message
+      };
     }
     applyAuthSession(authResult.session, authResult.mode);
     updateProfileUI();
@@ -787,7 +805,7 @@ async function ensureRemoteActionAuth(reason, requiresRemote) {
   }
   if (isAuthSessionValid()) return { ok: true, auth: state.auth };
   const authResult = await authenticateFlow(reason);
-  if (!authResult.ok) return { ok: false };
+  if (!authResult.ok) return { ok: false, reason: authResult.reason || "auth-required", message: authResult.message || "" };
   return isAuthSessionValid() ? { ok: true, auth: state.auth } : { ok: false };
 }
 
@@ -1023,7 +1041,7 @@ async function submitCurrentScore() {
       els.resultSubmitStatus.textContent =
         authGate.reason === "auth-config-missing"
           ? "Verified submit requires authNonce/authVerify backend endpoints."
-          : "Authentication is required for verified submit mode.";
+          : authGate.message || "Authentication is required for verified submit mode.";
       return;
     }
 
@@ -1038,8 +1056,9 @@ async function submitCurrentScore() {
     });
 
     if (!response.ok) {
-      els.resultSubmitStatus.textContent = "Could not sign this run. Try reconnecting wallet.";
-      toast("Sign failed");
+      const submitMessage = getFailureMessage(response, "Score submit failed");
+      els.resultSubmitStatus.textContent = submitMessage;
+      toast(submitMessage);
       return;
     }
 
@@ -1121,7 +1140,7 @@ async function claimMilestoneFlow() {
       els.claimOgStatus.textContent =
         authGate.reason === "auth-config-missing"
           ? "Verified reward sync requires authNonce/authVerify backend endpoints."
-          : "Authentication is required for verified reward sync.";
+          : authGate.message || "Authentication is required for verified reward sync.";
       return;
     }
 
@@ -1137,8 +1156,13 @@ async function claimMilestoneFlow() {
     });
 
     if (!response.ok) {
-      els.claimOgStatus.textContent = "Claim failed. Retry after reconnecting wallet.";
-      toast("Claim failed");
+      if (response.claim) {
+        syncClaimRecord();
+        updateHome();
+      }
+      const claimMessage = getFailureMessage(response, "Claim failed");
+      els.claimOgStatus.textContent = claimMessage;
+      toast(claimMessage);
       return;
     }
 
