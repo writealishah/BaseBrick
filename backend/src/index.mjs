@@ -239,6 +239,7 @@ function createRewardMinter() {
 
     return {
       enabled: true,
+      reason: "ready",
       contractAddress,
       account,
       publicClient,
@@ -502,7 +503,8 @@ function rewardRuntimeInfo() {
     metadataBaseUri: String(config.rewardMetadataBaseUri || "").trim(),
     contractExplorerUrl: rewardContractExplorerUrl(),
     mintMode: config.mintMode,
-    liveMinterEnabled: Boolean(rewardMinter?.enabled)
+    liveMinterEnabled: Boolean(rewardMinter?.enabled),
+    liveMinterReason: String(rewardMinter?.reason || "")
   };
 }
 
