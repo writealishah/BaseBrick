@@ -17,7 +17,7 @@ import {
   setDailyBest,
   setProfile,
   setSoundMuted
-} from "./storage.js?v=20260324a";
+} from "./storage.js?v=20260324b";
 import {
   authenticateWithSiwe,
   claimMilestoneReward,
@@ -141,6 +141,13 @@ function updateProofButton() {
   els.buttons.viewProof.disabled = true;
 }
 
+function syncThemeColorMeta() {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) return;
+  const lightMode = window.matchMedia("(prefers-color-scheme: light)").matches;
+  meta.setAttribute("content", lightMode ? "#d4e2c2" : "#1a2511");
+}
+
 function normalizeName(name) {
   const clean = (name || "").trim();
   return clean.slice(0, 32);
@@ -207,6 +214,7 @@ const els = {
     homeLeaderboard: document.getElementById("btn-home-leaderboard"),
     homeShare: document.getElementById("btn-home-share"),
     homeSave: document.getElementById("btn-home-save"),
+    viewContract: document.getElementById("btn-view-contract"),
     connectWallet: document.getElementById("btn-connect-wallet"),
     switchBase: document.getElementById("btn-switch-base"),
     authenticate: document.getElementById("btn-authenticate"),
@@ -313,6 +321,23 @@ function toast(message, tone = "normal") {
   window.setTimeout(() => item.remove(), 1500);
 }
 
+function setActionBusy(button, isBusy, busyLabel) {
+  if (!button) return;
+  if (isBusy) {
+    if (!button.dataset.prevLabel) button.dataset.prevLabel = button.textContent || "";
+    if (!button.dataset.prevDisabled) button.dataset.prevDisabled = button.disabled ? "1" : "0";
+    button.disabled = true;
+    if (busyLabel) button.textContent = busyLabel;
+    return;
+  }
+  const prevLabel = button.dataset.prevLabel || "";
+  const prevDisabled = button.dataset.prevDisabled === "1";
+  if (prevLabel) button.textContent = prevLabel;
+  button.disabled = prevDisabled;
+  delete button.dataset.prevLabel;
+  delete button.dataset.prevDisabled;
+}
+
 function pulse(pattern) {
   if (!isMobileGameplay) return;
   if (!navigator.vibrate) return;
@@ -385,6 +410,17 @@ function updateHome() {
   } else {
     els.homeTrustNote.textContent =
       `Local challenge mode active. Wallet is optional for milestone claim proofs. Best cleared stage: ${bestCleared}.`;
+  }
+
+  const contractUrl = typeof state.runtime.rewardContractExplorerUrl === "string"
+    ? state.runtime.rewardContractExplorerUrl.trim()
+    : "";
+  if (contractUrl) {
+    els.buttons.viewContract.classList.remove("is-hidden");
+    els.buttons.viewContract.disabled = false;
+  } else {
+    els.buttons.viewContract.classList.add("is-hidden");
+    els.buttons.viewContract.disabled = true;
   }
 }
 
@@ -683,6 +719,7 @@ async function applyWalletState(profileLike) {
 }
 
 async function connectWalletFlow() {
+  setActionBusy(els.buttons.connectWallet, true, "Connecting...");
   try {
     const connected = await connectWallet();
     if (!connected.ok) {
@@ -693,10 +730,13 @@ async function connectWalletFlow() {
     toast("Wallet connected", "blue");
   } catch {
     toast("Wallet connection rejected");
+  } finally {
+    setActionBusy(els.buttons.connectWallet, false);
   }
 }
 
 async function switchBaseFlow() {
+  setActionBusy(els.buttons.switchBase, true, "Switching...");
   try {
     const switched = await ensureBaseNetwork();
     if (!switched.ok) {
@@ -707,6 +747,8 @@ async function switchBaseFlow() {
     toast("Switched to Base", "blue");
   } catch {
     toast("Network switch cancelled");
+  } finally {
+    setActionBusy(els.buttons.switchBase, false);
   }
 }
 
@@ -716,6 +758,7 @@ async function authenticateFlow(reason = "verify your profile") {
     return { ok: false, reason: "wallet-missing" };
   }
 
+  setActionBusy(els.buttons.authenticate, true, "Authenticating...");
   try {
     const authResult = await authenticateWithSiwe({
       statement: `Authorize BaseBrick to ${reason}.`
@@ -731,6 +774,9 @@ async function authenticateFlow(reason = "verify your profile") {
   } catch {
     toast("Authentication cancelled");
     return { ok: false, reason: "auth-cancelled" };
+  } finally {
+    setActionBusy(els.buttons.authenticate, false);
+    updateProfileUI();
   }
 }
 
@@ -780,6 +826,17 @@ function toHome() {
   game.stop();
   setScreen("home");
   updateHome();
+}
+
+function openRewardContract() {
+  const contractUrl = typeof state.runtime.rewardContractExplorerUrl === "string"
+    ? state.runtime.rewardContractExplorerUrl.trim()
+    : "";
+  if (!contractUrl) {
+    toast("Reward contract link unavailable");
+    return;
+  }
+  window.open(contractUrl, "_blank", "noopener,noreferrer");
 }
 
 function fillResult(result) {
@@ -949,6 +1006,7 @@ async function submitCurrentScore() {
     return;
   }
 
+  setActionBusy(els.buttons.submitScore, true, "Submitting...");
   try {
     if (!isBaseChain(state.profile.chainId)) {
       const switched = await ensureBaseNetwork();
@@ -1000,6 +1058,9 @@ async function submitCurrentScore() {
   } catch {
     els.resultSubmitStatus.textContent = "Signing was cancelled.";
     toast("Signing cancelled");
+  } finally {
+    setActionBusy(els.buttons.submitScore, false);
+    if (state.lastResult) fillResult(state.lastResult);
   }
 }
 
@@ -1043,6 +1104,7 @@ async function claimMilestoneFlow() {
     return;
   }
 
+  setActionBusy(els.buttons.claimOg, true, "Claiming...");
   try {
     if (!isBaseChain(state.profile.chainId)) {
       const switched = await ensureBaseNetwork();
@@ -1107,6 +1169,9 @@ async function claimMilestoneFlow() {
   } catch {
     els.claimOgStatus.textContent = "Claim cancelled.";
     toast("Claim cancelled");
+  } finally {
+    setActionBusy(els.buttons.claimOg, false);
+    if (state.lastResult) fillResult(state.lastResult);
   }
 }
 
@@ -1205,6 +1270,7 @@ els.buttons.homeShare.addEventListener("click", () => {
 });
 
 els.buttons.homeSave.addEventListener("click", askInstall);
+els.buttons.viewContract.addEventListener("click", openRewardContract);
 els.buttons.resultSave.addEventListener("click", askInstall);
 els.buttons.connectWallet.addEventListener("click", connectWalletFlow);
 els.buttons.switchBase.addEventListener("click", switchBaseFlow);
@@ -1363,6 +1429,13 @@ syncClaimRecord();
 updateHome();
 refreshSoundButton();
 updateProfileUI();
+syncThemeColorMeta();
+const colorSchemeMedia = window.matchMedia("(prefers-color-scheme: light)");
+if (typeof colorSchemeMedia.addEventListener === "function") {
+  colorSchemeMedia.addEventListener("change", syncThemeColorMeta);
+} else if (typeof colorSchemeMedia.addListener === "function") {
+  colorSchemeMedia.addListener(syncThemeColorMeta);
+}
 setScreen("home");
 bootWalletSync();
 bootDailyChallenge();
