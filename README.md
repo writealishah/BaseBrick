@@ -7,7 +7,7 @@ BaseBrick is a standalone Breakout-style mini app where players clear stages and
 Implemented in this repo:
 
 - Standard web app flow (no Farcaster SDK dependency)
-- Wallet adapter powered by wagmi + viem + Base Account connector fallback path
+- Wallet adapter powered by wagmi + viem + Base Account / Coinbase connectors
 - SIWE-compatible auth flow for verified actions
 - Guest-first gameplay with delayed wallet/auth prompts
 - Production reward contract deployed and verified on Base mainnet:
@@ -45,7 +45,7 @@ Still external (not solved by static frontend code alone):
 - Daily seeded challenge target (local)
 - Wallet connect and Base network switch button
 - Optional SIWE authentication flow for verified remote actions
-- Wallet adapter boundary with transitional fallback (`external adapter` preferred, `legacy-injected` fallback)
+- Wallet adapter boundary (`external adapter` required in production, `legacy-injected` only for localhost fallback)
 - Player identity using resolved wallet name (`.eth`/`*.base.eth` when available) or custom alias
 - Signed score submission via wallet `personal_sign`
 - Signed device leaderboard with player names + wallet addresses (local storage today)
@@ -150,9 +150,13 @@ Supported runtime endpoints:
 Supported runtime wallet adapter keys:
 
 - `walletAdapterUrl` -> optional custom adapter script URL
+- `walletAdapterRequired`
+- `allowLegacyInjected`
 - `walletAdapter.appName`
 - `walletAdapter.appLogoUrl`
 - `walletAdapter.rpcUrl`
+- `walletAdapter.required`
+- `walletAdapter.allowLegacyInjected`
 
 Supported runtime reward keys:
 
@@ -193,4 +197,4 @@ Included:
 
 Current Base docs indicate Base App now runs standard web apps (not Farcaster mini-app SDK flows), with wagmi/viem + SIWE as the preferred auth/wallet stack.
 
-This repo now includes a SIWE-compatible auth slice and verified-session wiring while keeping a lightweight injected-provider flow for static hosting. For full production parity, the next integration step is migrating connectors and wallet state to full wagmi + viem + Base Account integration.
+This repo now uses an adapter-first wallet stack with wagmi + viem + Base Account/Coinbase connectors in production. Legacy injected mode remains available only for localhost debugging.
