@@ -1,0 +1,31 @@
+{
+  "name": "BaseBrick",
+  "slug": "basebrick",
+  "description": "Play BaseBrick and win milestone NFTs on Base Network. Fast arcade runs, instant retries, and claim moments at stages 5, 10, 15, and 20.",
+  "tagline": "Play fast. Win NFTs on Base Network.",
+  "categories": ["arcade", "game", "casual"],
+  "theme": {
+    "shell": "#1a2511",
+    "lcd": "#3f6b2e",
+    "accent": "#2282ff"
+  },
+  "share": {
+    "title": "BaseBrick | Win NFTs on Base",
+    "textTemplate": "I scored {{score}} in BaseBrick while chasing milestone NFTs on Base Network. Beat this run.",
+    "image": "./assets/social-preview.svg"
+  },
+  "hooks": {
+    "leaderboard": "device-local leaderboard active; verified global API can replace fetchLeaderboard",
+    "scoreSubmit": "wallet personal_sign flow active; backend/onchain relay can replace submitScore",
+    "dailyChallenge": "seeded by local date; ready for remote seed endpoint",
+    "savePrompt": "uses PWA beforeinstallprompt fallback",
+    "milestoneRewards": "milestone claim proofs (5/10/15/20) are signed client-side and sync to reward backend when configured",
+    "siweAuth": "optional SIWE auth flow active when authNonce/authVerify endpoints are configured",
+    "walletLayer": "wallet adapter boundary auto-loads wallet-adapter.js (wagmi/viem/Base Account) with legacy injected fallback"
+  },
+  "launchAssets": {
+    "screenshotsDir": "./launch-assets",
+    "icon": "./assets/icon.svg",
+    "socialPreview": "./assets/social-preview.svg"
+  }
+}

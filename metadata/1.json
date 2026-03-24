@@ -1,0 +1,34 @@
+{
+  "name": "BaseBrick Bronze Medal",
+  "description": "Bronze milestone medal for clearing Stage 5 in BaseBrick. Professional proof of progression on Base Network.",
+  "image": "https://basebrick.vercel.app/metadata/images/m1.svg",
+  "external_url": "https://basebrick.vercel.app/",
+  "animation_url": "https://basebrick.vercel.app/",
+  "background_color": "021018",
+  "attributes": [
+    {
+      "trait_type": "Collection",
+      "value": "BaseBrick Alpha"
+    },
+    {
+      "trait_type": "Milestone",
+      "value": 1
+    },
+    {
+      "trait_type": "Stage Cleared",
+      "value": 5
+    },
+    {
+      "trait_type": "Rarity Tier",
+      "value": "Bronze Medal"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Base"
+    },
+    {
+      "trait_type": "Game",
+      "value": "BaseBrick"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#243018" />
+      <stop offset="100%" stop-color="#11190c" />
+    </linearGradient>
+    <linearGradient id="lcd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#62903b" />
+      <stop offset="100%" stop-color="#345e2d" />
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="92" fill="url(#bg)" stroke="#3d4c2b" stroke-width="18" />
+  <rect x="86" y="102" width="340" height="240" rx="24" fill="url(#lcd)" stroke="#7cb24b" stroke-width="8" />
+  <rect x="112" y="128" width="92" height="28" rx="6" fill="#7fc746" />
+  <rect x="210" y="128" width="92" height="28" rx="6" fill="#2c7cff" />
+  <rect x="308" y="128" width="92" height="28" rx="6" fill="#7fc746" />
+  <rect x="112" y="162" width="92" height="28" rx="6" fill="#7fc746" />
+  <rect x="210" y="162" width="92" height="28" rx="6" fill="#7fc746" />
+  <rect x="308" y="162" width="92" height="28" rx="6" fill="#2c7cff" />
+  <rect x="168" y="286" width="176" height="22" rx="11" fill="#d5f59f" />
+  <circle cx="256" cy="236" r="12" fill="#f2ffd8" />
+  <text x="256" y="410" fill="#b7d88d" font-size="34" text-anchor="middle" font-family="monospace">BASEBRICK</text>
+</svg>

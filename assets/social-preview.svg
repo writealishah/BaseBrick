@@ -1,0 +1,31 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e2b14" />
+      <stop offset="100%" stop-color="#0d1208" />
+    </linearGradient>
+    <linearGradient id="lcd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6fa644" />
+      <stop offset="100%" stop-color="#315a29" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect x="110" y="64" width="980" height="502" rx="40" fill="#232d1a" stroke="#3f4f2d" stroke-width="10" />
+  <rect x="180" y="126" width="840" height="344" rx="22" fill="url(#lcd)" stroke="#86be53" stroke-width="8" />
+  <rect x="214" y="164" width="112" height="30" rx="6" fill="#85cc4c" />
+  <rect x="334" y="164" width="112" height="30" rx="6" fill="#2d7dff" />
+  <rect x="454" y="164" width="112" height="30" rx="6" fill="#85cc4c" />
+  <rect x="574" y="164" width="112" height="30" rx="6" fill="#2d7dff" />
+  <rect x="694" y="164" width="112" height="30" rx="6" fill="#85cc4c" />
+  <rect x="814" y="164" width="112" height="30" rx="6" fill="#85cc4c" />
+  <rect x="214" y="200" width="112" height="30" rx="6" fill="#85cc4c" />
+  <rect x="334" y="200" width="112" height="30" rx="6" fill="#85cc4c" />
+  <rect x="454" y="200" width="112" height="30" rx="6" fill="#2d7dff" />
+  <rect x="574" y="200" width="112" height="30" rx="6" fill="#85cc4c" />
+  <rect x="694" y="200" width="112" height="30" rx="6" fill="#2d7dff" />
+  <rect x="814" y="200" width="112" height="30" rx="6" fill="#85cc4c" />
+  <circle cx="630" cy="286" r="12" fill="#f0ffd6" />
+  <rect x="492" y="380" width="216" height="20" rx="10" fill="#d5f39c" />
+  <text x="180" y="532" fill="#c6e59a" font-size="44" font-family="monospace">BaseBrick</text>
+  <text x="180" y="574" fill="#7cb4ff" font-size="30" font-family="monospace">Play and win milestone NFTs on Base Network.</text>
+</svg>

@@ -1,0 +1,34 @@
+{
+  "name": "BaseBrick Diamond Medal",
+  "description": "Diamond milestone medal for clearing Stage 20 in BaseBrick. Professional proof of progression on Base Network.",
+  "image": "https://basebrick.vercel.app/metadata/images/m4.svg",
+  "external_url": "https://basebrick.vercel.app/",
+  "animation_url": "https://basebrick.vercel.app/",
+  "background_color": "0b1b3f",
+  "attributes": [
+    {
+      "trait_type": "Collection",
+      "value": "BaseBrick Alpha"
+    },
+    {
+      "trait_type": "Milestone",
+      "value": 4
+    },
+    {
+      "trait_type": "Stage Cleared",
+      "value": 20
+    },
+    {
+      "trait_type": "Rarity Tier",
+      "value": "Diamond Medal"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Base"
+    },
+    {
+      "trait_type": "Game",
+      "value": "BaseBrick"
+    }
+  ]
+}

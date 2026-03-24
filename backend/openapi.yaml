@@ -1,0 +1,364 @@
+openapi: 3.1.0
+info:
+  title: BaseBrick Verified Backend API
+  version: 1.0.0
+  description: |
+    Verified backend contract for auth, daily seed, score submission, leaderboard, and milestone reward claims.
+servers:
+  - url: https://api.example.com
+tags:
+  - name: auth
+  - name: game
+  - name: rewards
+paths:
+  /health:
+    get:
+      tags: [game]
+      summary: Healthcheck and network metadata
+      responses:
+        "200":
+          description: Service health
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, service, env, network, chainId, now]
+                properties:
+                  ok:
+                    type: boolean
+                  service:
+                    type: string
+                  env:
+                    type: string
+                  network:
+                    type: string
+                  chainId:
+                    type: string
+                  now:
+                    type: string
+                    format: date-time
+  /metrics:
+    get:
+      tags: [game]
+      summary: Basic backend counters
+      responses:
+        "200":
+          description: Current counters and cardinality
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, metrics, now]
+                properties:
+                  ok:
+                    type: boolean
+                  metrics:
+                    type: object
+                    additionalProperties: true
+                  now:
+                    type: string
+                    format: date-time
+  /auth/nonce:
+    get:
+      tags: [auth]
+      summary: Issue SIWE nonce
+      responses:
+        "200":
+          description: Nonce issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthNonceResponse"
+  /auth/verify:
+    post:
+      tags: [auth]
+      summary: Verify SIWE payload and issue session token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthVerifyRequest"
+      responses:
+        "200":
+          description: Verified session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthVerifyResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+  /monobrick/daily-seed:
+    get:
+      tags: [game]
+      summary: Daily challenge seed + target
+      responses:
+        "200":
+          description: Daily challenge config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailySeedResponse"
+  /monobrick/submit-score:
+    post:
+      tags: [game]
+      summary: Submit verified score event
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitScoreRequest"
+      responses:
+        "200":
+          description: Score accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmitScoreResponse"
+        "400":
+          $ref: "#/components/responses/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+  /monobrick/leaderboard:
+    get:
+      tags: [game]
+      summary: Verified leaderboard snapshot
+      responses:
+        "200":
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [entries, source]
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LeaderboardEntry"
+                  source:
+                    type: string
+                    example: verified-remote
+                  updatedAt:
+                    type: string
+                    format: date-time
+  /monobrick/claim-reward:
+    post:
+      tags: [rewards]
+      summary: Register eligible milestone claim and return mint state
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClaimRewardRequest"
+      responses:
+        "200":
+          description: Claim accepted or existing claim returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClaimRewardResponse"
+        "400":
+          $ref: "#/components/responses/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/ErrorResponse"
+        "409":
+          $ref: "#/components/responses/ErrorResponse"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            detail:
+              type: string
+    AuthNonceResponse:
+      type: object
+      required: [nonce, expiresAt]
+      properties:
+        nonce:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    AuthVerifyRequest:
+      type: object
+      required: [address, chainId, nonce, issuedAt, message, signature]
+      properties:
+        address:
+          type: string
+        chainId:
+          type: string
+        nonce:
+          type: string
+        issuedAt:
+          type: string
+          format: date-time
+        message:
+          type: string
+        signature:
+          type: string
+    AuthVerifyResponse:
+      type: object
+      required: [token, expiresAt]
+      properties:
+        token:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    DailySeedResponse:
+      type: object
+      required: [seed, target]
+      properties:
+        seed:
+          type: string
+        target:
+          type: integer
+        source:
+          type: string
+    SubmitScoreRequest:
+      type: object
+      required:
+        [score, stage, maxCombo, playerName, wallet, signature, chainId, dailySeed, when]
+      properties:
+        score:
+          type: integer
+          minimum: 0
+        stage:
+          type: integer
+          minimum: 1
+        maxCombo:
+          type: integer
+          minimum: 1
+        playerName:
+          type: string
+        wallet:
+          type: string
+        signature:
+          type: string
+        chainId:
+          type: string
+        dailySeed:
+          type: string
+        when:
+          type: string
+          format: date-time
+        auth:
+          type: object
+          additionalProperties: true
+    SubmitScoreResponse:
+      type: object
+      required: [submissionId, acceptedAt, trust]
+      properties:
+        submissionId:
+          type: string
+        acceptedAt:
+          type: string
+          format: date-time
+        trust:
+          type: string
+          example: verified-remote
+    LeaderboardEntry:
+      type: object
+      required: [score, stage, maxCombo, playerName, wallet, when]
+      properties:
+        score:
+          type: integer
+        stage:
+          type: integer
+        maxCombo:
+          type: integer
+        playerName:
+          type: string
+        wallet:
+          type: string
+        when:
+          type: string
+          format: date-time
+    ClaimRewardRequest:
+      type: object
+      required:
+        [wallet, playerName, score, stage, chainId, tokenId, signature, when, milestoneId, milestoneStage, milestoneLabel]
+      properties:
+        wallet:
+          type: string
+        playerName:
+          type: string
+        score:
+          type: integer
+        stage:
+          type: integer
+        chainId:
+          type: string
+        tokenId:
+          type: string
+        signature:
+          type: string
+        when:
+          type: string
+          format: date-time
+        milestoneId:
+          type: string
+          enum: [alpha, beta, gamma, omega]
+        milestoneStage:
+          type: integer
+          enum: [5, 10, 15, 20]
+        milestoneLabel:
+          type: string
+          example: Alpha BaseBrick
+        auth:
+          type: object
+          additionalProperties: true
+    ClaimRewardResponse:
+      type: object
+      required: [claimId, milestoneId, milestoneStage, mintStatus]
+      properties:
+        claimId:
+          type: string
+        milestoneId:
+          type: string
+          enum: [alpha, beta, gamma, omega]
+        milestoneStage:
+          type: integer
+          enum: [5, 10, 15, 20]
+        milestoneLabel:
+          type: string
+        mintStatus:
+          type: string
+          enum: [pending, minted, failed, unavailable]
+        mintTxHash:
+          type: string
+        mintedTokenId:
+          type: string
+        mintedAt:
+          type: string
+          format: date-time

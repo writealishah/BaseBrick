@@ -1,0 +1,8 @@
+{
+  "address": "0x1234567890abcdef1234567890abcdef12345678",
+  "chainId": "0x2105",
+  "nonce": "e740089ed6d14f0c85f96626f8e0b10a",
+  "issuedAt": "2026-03-22T10:22:11.000Z",
+  "message": "example.com wants you to sign in with your Ethereum account:\n0x1234567890abcdef1234567890abcdef12345678\n\nAuthorize BaseBrick to verify competitive score submissions.\n\nURI: https://example.com\nVersion: 1\nChain ID: 8453\nNonce: e740089ed6d14f0c85f96626f8e0b10a\nIssued At: 2026-03-22T10:22:11.000Z",
+  "signature": "0xabc123..."
+}

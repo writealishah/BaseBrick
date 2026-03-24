@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-label="BaseBrick Gold Medal">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1730"/>
+      <stop offset="100%" stop-color="#1e406f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="45%">
+      <stop offset="0%" stop-color="#ffd862" stop-opacity="0.48"/>
+      <stop offset="100%" stop-color="#ffd862" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="medalOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff4c3"/>
+      <stop offset="45%" stop-color="#f8c83e"/>
+      <stop offset="100%" stop-color="#cb8f08"/>
+    </linearGradient>
+    <linearGradient id="medalInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffde8"/>
+      <stop offset="100%" stop-color="#ffd85e"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6fb2ff"/>
+      <stop offset="100%" stop-color="#2963c9"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#bg)"/>
+  <rect x="40" y="40" width="1120" height="1120" rx="34" fill="none" stroke="#ffd980" stroke-opacity="0.55" stroke-width="4"/>
+  <circle cx="600" cy="560" r="370" fill="url(#glow)"/>
+  <text x="600" y="126" fill="#d5e7ff" font-size="44" font-family="Verdana, Arial, sans-serif" letter-spacing="8" text-anchor="middle">BASEBRICK</text>
+  <text x="600" y="180" fill="#fff9dc" font-size="54" font-family="Verdana, Arial, sans-serif" font-weight="700" text-anchor="middle">GOLD MEDAL</text>
+  <g filter="url(#shadow)">
+    <path d="M462 214h88v188h-88z" fill="url(#ribbon)"/>
+    <path d="M650 214h88v188h-88z" fill="url(#ribbon)"/>
+    <path d="M462 402l44 70 44-70z" fill="#285dc4"/>
+    <path d="M650 402l44 70 44-70z" fill="#285dc4"/>
+    <circle cx="600" cy="605" r="255" fill="url(#medalOuter)"/>
+    <circle cx="600" cy="605" r="214" fill="#d2960a"/>
+    <circle cx="600" cy="605" r="178" fill="url(#medalInner)"/>
+    <circle cx="600" cy="605" r="146" fill="#d4a326"/>
+    <polygon points="600,468 638,556 732,566 661,630 682,724 600,679 518,724 539,630 468,566 562,556" fill="#fff9d0"/>
+    <text x="600" y="742" fill="#fff9e1" font-size="62" font-family="Verdana, Arial, sans-serif" font-weight="700" text-anchor="middle">STAGE 15</text>
+  </g>
+  <text x="600" y="1080" fill="#eef5ff" font-size="38" font-family="Verdana, Arial, sans-serif" letter-spacing="4" text-anchor="middle">PLAY GAME WIN NFTS ON BASE</text>
+</svg>

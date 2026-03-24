@@ -1,0 +1,14 @@
+{
+  "score": 12840,
+  "stage": 14,
+  "maxCombo": 27,
+  "playerName": "brickrunner.base.eth",
+  "wallet": "0x1234567890abcdef1234567890abcdef12345678",
+  "signature": "0xdef456...",
+  "chainId": "0x2105",
+  "dailySeed": "20260322",
+  "when": "2026-03-22T10:25:41.000Z",
+  "auth": {
+    "mode": "siwe-verified"
+  }
+}

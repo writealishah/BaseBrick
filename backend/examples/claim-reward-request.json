@@ -1,0 +1,16 @@
+{
+  "wallet": "0x1234567890abcdef1234567890abcdef12345678",
+  "playerName": "brickrunner.base.eth",
+  "score": 6420,
+  "stage": 5,
+  "chainId": "0x2105",
+  "tokenId": "5138291004",
+  "signature": "0x9876abcd...",
+  "when": "2026-03-22T10:31:02.000Z",
+  "milestoneId": "alpha",
+  "milestoneStage": 5,
+  "milestoneLabel": "Alpha BaseBrick",
+  "auth": {
+    "mode": "siwe-verified"
+  }
+}

@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>BaseBrick | Play & Win NFTs on Base Network</title>
+    <meta
+      name="description"
+      content="Play BaseBrick and win milestone NFTs on Base Network. Instant arcade runs, fast retries, and reward claims at stages 5, 10, 15, and 20."
+    />
+    <meta property="og:title" content="BaseBrick | Play & Win NFTs on Base" />
+    <meta
+      property="og:description"
+      content="Play the game, clear milestones, and win NFTs on Base Network."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./assets/social-preview.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BaseBrick | Win NFTs on Base" />
+    <meta name="twitter:description" content="Play, clear stages, and win milestone NFTs on Base Network." />
+    <meta name="twitter:image" content="./assets/social-preview.svg" />
+    <meta name="basebrick-api-base-url" content="" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#1a2511" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css?v=20260324a" />
+  </head>
+  <body>
+    <div class="ambient-layer" aria-hidden="true"></div>
+    <main class="device-shell">
+      <header class="shell-topbar">
+        <p class="brand-chip">BASE POCKET ARCADE</p>
+        <div class="topbar-actions">
+          <p id="wallet-chip" class="wallet-chip">Guest</p>
+          <button id="btn-sound-toggle" class="chip-btn" type="button" aria-label="Toggle sound">
+            SFX ON
+          </button>
+          <p class="build-chip">v14 Cartridge</p>
+        </div>
+      </header>
+
+      <section id="screen-home" class="screen is-active" aria-labelledby="title-home">
+        <div class="title-block">
+          <p class="kicker">Pocket Arcade Edition</p>
+          <h1 id="title-home">BaseBrick</h1>
+          <p class="pitch">Play fast. Win NFTs on Base Network.</p>
+        </div>
+
+        <div class="home-card">
+          <p class="home-copy">Play now. Clear milestones. Win NFTs on Base Network.</p>
+          <p class="hook-text">20-stage campaign. Claim milestone NFT rewards at stages 5, 10, 15, and 20.</p>
+          <div class="home-stats">
+            <div>
+              <p class="label">Best Run</p>
+              <p id="home-best" class="value">0</p>
+            </div>
+            <div>
+              <p class="label">Daily Goal</p>
+              <p id="home-daily-target" class="value">0</p>
+            </div>
+            <div>
+              <p class="label">Today</p>
+              <p id="home-daily-best" class="value">0</p>
+            </div>
+          </div>
+          <p id="home-daily-hook" class="hook-text">New seed loaded.</p>
+          <p id="home-campaign-note" class="trust-note">4 stages left to claim Alpha BaseBrick NFT proof.</p>
+          <p id="home-trust-note" class="trust-note">Guest mode starts instantly. Wallet is only needed for verified submit or NFT claim sync.</p>
+        </div>
+
+        <div class="cta-row cta-row-home">
+          <button id="btn-play-now" class="btn btn-primary btn-hero">Play Now</button>
+          <button id="btn-continue-campaign" class="btn btn-secondary is-hidden">Continue Campaign</button>
+          <button id="btn-home-leaderboard" class="btn btn-secondary">Leaderboard</button>
+        </div>
+
+        <div class="sub-actions">
+          <button id="btn-home-share" class="link-btn">Share Challenge</button>
+          <button id="btn-home-save" class="link-btn">Save App</button>
+        </div>
+
+        <details class="profile-card profile-card-optional">
+          <summary class="profile-summary">Optional: wallet + player name setup</summary>
+          <div class="profile-head">
+            <p class="label">Competitive Identity</p>
+            <p id="profile-status" class="profile-status">Guest mode active</p>
+          </div>
+          <p id="profile-display" class="profile-display">Current: Guest</p>
+          <div class="profile-row">
+            <button id="btn-connect-wallet" class="btn btn-secondary">Connect Wallet</button>
+            <button id="btn-switch-base" class="btn btn-secondary">Switch To Base</button>
+          </div>
+          <div class="profile-row">
+            <button id="btn-authenticate" class="btn btn-secondary">Authenticate (SIWE)</button>
+            <p id="auth-status" class="auth-status">Auth: not verified</p>
+          </div>
+          <label class="input-label" for="input-custom-name">Display Name (.base.eth / .eth / alias)</label>
+          <div class="profile-row">
+            <input id="input-custom-name" class="text-input" type="text" maxlength="32" placeholder="Your name" />
+            <button id="btn-save-custom-name" class="btn btn-primary">Save Name</button>
+          </div>
+        </details>
+      </section>
+
+      <section id="screen-game" class="screen" aria-labelledby="title-game">
+        <div class="hud-panel hud-panel-primary">
+          <div class="hud-item">
+            <p class="label">Score</p>
+            <p id="hud-score" class="value">0</p>
+          </div>
+          <div class="hud-item">
+            <p class="label">Best</p>
+            <p id="hud-best" class="value">0</p>
+          </div>
+          <div class="hud-item">
+            <p class="label">Lives</p>
+            <p id="hud-lives" class="value">3</p>
+          </div>
+          <div class="hud-item">
+            <p class="label">Stage</p>
+            <p id="hud-stage" class="value">1</p>
+          </div>
+        </div>
+        <div class="hud-panel hud-panel-secondary">
+          <div class="hud-item">
+            <p class="label">Speed</p>
+            <p id="hud-speed" class="value">1.0x</p>
+          </div>
+          <div class="hud-item">
+            <p class="label">Combo</p>
+            <p id="hud-combo" class="value">x1</p>
+          </div>
+        </div>
+
+        <h2 id="title-game" class="sr-only">Gameplay</h2>
+
+        <div class="display-frame">
+          <canvas id="game-canvas" width="540" height="420" aria-label="BaseBrick gameplay area"></canvas>
+          <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+        </div>
+
+        <div class="controls-panel">
+          <div class="control-row">
+            <button class="control-btn" data-control="left" aria-label="Move left">LEFT</button>
+            <button class="control-btn control-btn-launch" data-control="launch" aria-label="Launch ball">
+              LAUNCH
+            </button>
+            <button class="control-btn" data-control="right" aria-label="Move right">RIGHT</button>
+          </div>
+          <p class="control-hint">Drag on display or use arrow keys. Tap launch to start each life.</p>
+        </div>
+
+        <div class="cta-row">
+          <button id="btn-quick-restart" class="btn btn-primary">Restart Run</button>
+          <button id="btn-back-home" class="btn btn-secondary">Home</button>
+        </div>
+      </section>
+
+      <section id="screen-result" class="screen" aria-labelledby="title-result">
+        <div class="title-block">
+          <p class="kicker">Run Complete</p>
+          <h2 id="title-result">Top Score Signal</h2>
+          <p id="result-subtitle" class="pitch">Simple to start, hard to stop.</p>
+        </div>
+
+        <div class="result-card">
+          <div class="result-row">
+            <p class="label">Final Score</p>
+            <p id="result-score" class="value">0</p>
+          </div>
+          <div class="result-row">
+            <p class="label">Best Score</p>
+            <p id="result-best" class="value">0</p>
+          </div>
+          <div class="result-row">
+            <p class="label">Top Stage</p>
+            <p id="result-stage" class="value">1</p>
+          </div>
+          <div class="result-row">
+            <p class="label">Max Combo</p>
+            <p id="result-combo" class="value">x1</p>
+          </div>
+          <p id="result-challenge" class="hook-text">Beat this score.</p>
+          <p id="result-submit-status" class="hook-text">Wallet optional: connect to sign and save this run on your device.</p>
+          <p id="result-campaign-status" class="hook-text">Campaign progress: 0 / 20</p>
+          <div id="claim-og-wrap" class="claim-wrap is-hidden">
+            <button id="btn-claim-og" class="btn btn-primary">Claim Milestone NFT Proof</button>
+            <p id="claim-og-status" class="hook-text">Milestones unlock at stages 5, 10, 15, and 20. Mint status appears when reward backend sync is live.</p>
+          </div>
+        </div>
+
+        <div class="cta-row cta-row-result-primary">
+          <button id="btn-play-again" class="btn btn-primary btn-hero">Play Again</button>
+        </div>
+        <div class="cta-row cta-row-result-secondary">
+          <button id="btn-submit-score" class="btn btn-secondary">Sign And Save Run</button>
+          <button id="btn-share-score" class="btn btn-secondary">Share Score</button>
+        </div>
+        <div class="cta-row cta-row-result-tertiary">
+          <button id="btn-view-proof" class="btn btn-secondary">View Proof / NFT</button>
+        </div>
+
+        <div class="sub-actions">
+          <button id="btn-result-leaderboard" class="link-btn">View Leaderboard</button>
+          <button id="btn-result-save" class="link-btn">Save App For Daily Runs</button>
+        </div>
+      </section>
+
+      <section id="screen-leaderboard" class="screen" aria-labelledby="title-leaderboard">
+        <div class="title-block">
+          <p class="kicker">Device Leaderboard</p>
+          <h2 id="title-leaderboard">Signed Device Runs</h2>
+          <p id="leaderboard-mode-note" class="pitch">Runs are stored on this device. Global verified leaderboard is not live yet.</p>
+        </div>
+
+        <div id="leaderboard-list" class="leaderboard-list" aria-live="polite"></div>
+
+        <p class="hook-text">Signed runs include wallet signature metadata and local player identity.</p>
+
+        <div class="cta-row">
+          <button id="btn-leaderboard-play" class="btn btn-primary">New Run</button>
+          <button id="btn-leaderboard-home" class="btn btn-secondary">Home</button>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/bootstrap.js?v=20260324a"></script>
+  </body>
+</html>

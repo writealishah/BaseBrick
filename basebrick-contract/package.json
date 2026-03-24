@@ -1,0 +1,26 @@
+{
+  "name": "basebrick-contract",
+  "version": "1.0.0",
+  "description": "BaseBrick milestone NFT contracts",
+  "main": "index.js",
+  "scripts": {
+    "clean": "hardhat clean",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:base-sepolia": "hardhat run scripts/deploy.js --network baseSepolia",
+    "deploy:base": "hardhat run scripts/deploy.js --network base",
+    "abi:export": "node scripts/export-abi.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "dotenv": "^17.3.1",
+    "hardhat": "^2.26.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2"
+  }
+}

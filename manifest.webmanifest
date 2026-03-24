@@ -1,0 +1,22 @@
+{
+  "name": "BaseBrick",
+  "short_name": "BaseBrick",
+  "description": "Play BaseBrick and win milestone NFTs on Base Network with fast arcade runs and instant retries.",
+  "id": "/",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "orientation": "portrait",
+  "background_color": "#10190a",
+  "theme_color": "#1a2511",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

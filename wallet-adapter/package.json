@@ -1,0 +1,20 @@
+{
+  "name": "monobrick-wallet-adapter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "@metamask/sdk": "^0.33.1",
+    "@wagmi/connectors": "5.11.2",
+    "@wagmi/core": "2.21.2",
+    "ox": "^0.9.6",
+    "viem": "^2.39.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.11"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "BaseBrick Gold Medal",
+  "description": "Gold milestone medal for clearing Stage 15 in BaseBrick. Professional proof of progression on Base Network.",
+  "image": "https://basebrick.vercel.app/metadata/images/m3.svg",
+  "external_url": "https://basebrick.vercel.app/",
+  "animation_url": "https://basebrick.vercel.app/",
+  "background_color": "081733",
+  "attributes": [
+    {
+      "trait_type": "Collection",
+      "value": "BaseBrick Alpha"
+    },
+    {
+      "trait_type": "Milestone",
+      "value": 3
+    },
+    {
+      "trait_type": "Stage Cleared",
+      "value": 15
+    },
+    {
+      "trait_type": "Rarity Tier",
+      "value": "Gold Medal"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Base"
+    },
+    {
+      "trait_type": "Game",
+      "value": "BaseBrick"
+    }
+  ]
+}
