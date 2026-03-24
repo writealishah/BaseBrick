@@ -1,9 +1,13 @@
 {
   "apiBaseUrl": "http://localhost:8787",
   "walletAdapterUrl": "/wallet-adapter.js",
+  "walletAdapterRequired": false,
+  "allowLegacyInjected": true,
   "walletAdapter": {
     "appName": "BaseBrick",
-    "rpcUrl": "https://mainnet.base.org"
+    "rpcUrl": "https://mainnet.base.org",
+    "required": false,
+    "allowLegacyInjected": true
   },
   "reward": {
     "chainId": "0x2105",
