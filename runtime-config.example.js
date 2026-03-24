@@ -1,9 +1,13 @@
 window.MONOBRICK_RUNTIME = {
   apiBaseUrl: "https://api.example.com",
   walletAdapterUrl: "/wallet-adapter.js",
+  walletAdapterRequired: true,
+  allowLegacyInjected: false,
   walletAdapter: {
     appName: "BaseBrick",
-    rpcUrl: "https://mainnet.base.org"
+    rpcUrl: "https://mainnet.base.org",
+    required: true,
+    allowLegacyInjected: false
   },
   reward: {
     chainId: "0x2105",
