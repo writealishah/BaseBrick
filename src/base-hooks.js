@@ -61,7 +61,9 @@ function getEndpoint(key) {
   const raw = fromMap || direct;
   if (!raw) return "";
   if (/^https?:\/\//i.test(raw)) return raw;
-  if (!baseUrl) return "";
+  if (!baseUrl) {
+    return raw.startsWith("/") ? raw : `/${raw}`;
+  }
   const left = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
   const right = raw.startsWith("/") ? raw : `/${raw}`;
   return `${left}${right}`;
