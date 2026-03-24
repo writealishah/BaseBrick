@@ -43,6 +43,7 @@ export function createConfig() {
     rateLimitClaimPerIp: intEnv("RATE_LIMIT_CLAIM_PER_IP", 30),
     mintMode: (process.env.MINT_MODE || "pending").toLowerCase(),
     mintExplorerBase: process.env.MINT_EXPLORER_BASE || "https://basescan.org/tx/",
+    builderCode: process.env.BUILDER_CODE || "",
     baseRpcUrl: process.env.BASE_RPC_URL || "https://mainnet.base.org",
     rewardSignerPrivateKey: process.env.REWARD_SIGNER_PRIVATE_KEY || "",
     mintConfirmations: intEnv("MINT_CONFIRMATIONS", 1),
