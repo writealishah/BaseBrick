@@ -231,10 +231,20 @@ function normalizePrivateKey(value) {
   return trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`;
 }
 
+function normalizeBuilderCodeDataSuffix(value) {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed.startsWith("0x")
+    ? trimmed
+    : `0x${Buffer.from(trimmed, "utf8").toString("hex")}`;
+}
+
 function createRewardMinter() {
   const liveMode = config.mintMode === "live";
   const contractAddress = String(config.rewardContractAddress || "").trim();
   const signerKey = normalizePrivateKey(config.rewardSignerPrivateKey);
+  const dataSuffix = normalizeBuilderCodeDataSuffix(config.builderCode);
   if (!liveMode) return { enabled: false, reason: "mint-mode-not-live" };
   if (!contractAddress || !isAddress(contractAddress)) {
     return { enabled: false, reason: "contract-address-missing" };
@@ -289,7 +299,8 @@ function createRewardMinter() {
             address: contractAddress,
             abi: REWARD_CONTRACT_ABI,
             functionName: "mintMilestone",
-            args: [wallet, tokenId]
+            args: [wallet, tokenId],
+            ...(dataSuffix ? { dataSuffix } : {})
           });
 
           const receipt = await publicClient.waitForTransactionReceipt({
