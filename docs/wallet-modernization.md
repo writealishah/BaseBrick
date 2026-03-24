@@ -11,7 +11,8 @@ This static repo now uses a wallet adapter boundary so gameplay code stays stabl
 - `src/base-hooks.js`: auth/submit/claim logic using wallet interface
 - `window.MONOBRICK_WALLET_ADAPTER` (optional): external modern adapter
 - `wallet-adapter/`: buildable wagmi + viem + Base Account adapter package
-- fallback mode: legacy injected provider
+- production policy: adapter-first (legacy injected disabled by default)
+- localhost policy: legacy injected fallback allowed for debugging
 
 ## Adapter Contract
 
@@ -62,11 +63,26 @@ Output:
 Adapter internals:
 
 - wagmi core action flow (`connect`, `getAccount`, `switchChain`, `signMessage`, `watchAccount`)
-- wagmi connectors (`baseAccount`, `injected`)
+- wagmi connectors (`baseAccount`, `coinbaseWallet`, `injected`)
 - viem chain transport for Base mainnet
 - Base Account SIWE capability via `wallet_connect` + `signInWithEthereum`
+- guest-safe behavior: passive wallet checks do not trigger connect popups
 
-## Transitional Rule
+## Runtime Wallet Policy
 
-If adapter is absent, app falls back to `legacy-injected`.
-This keeps static hosting compatibility while enabling production migration without touching game logic.
+Runtime keys:
+
+- `walletAdapterRequired`
+- `allowLegacyInjected`
+- `walletAdapter.required`
+- `walletAdapter.allowLegacyInjected`
+
+Recommended production values:
+
+- `walletAdapterRequired: true`
+- `allowLegacyInjected: false`
+
+Recommended localhost values:
+
+- `walletAdapterRequired: false`
+- `allowLegacyInjected: true`
