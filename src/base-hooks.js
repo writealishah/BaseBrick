@@ -77,10 +77,43 @@ function normalizeEntries(payload) {
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options);
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+  const raw = await response.text();
+  let parsed = null;
+  if (raw) {
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = null;
+    }
   }
-  return response.json();
+  if (!response.ok) {
+    const code = typeof parsed?.error?.code === "string" ? parsed.error.code : "";
+    const message = typeof parsed?.error?.message === "string" ? parsed.error.message : "";
+    const detail = typeof parsed?.error?.detail === "string" ? parsed.error.detail : "";
+    const error = new Error(message || `HTTP ${response.status}`);
+    error.status = response.status;
+    error.code = code || `http-${response.status}`;
+    error.apiMessage = message;
+    error.apiDetail = detail;
+    error.payload = parsed;
+    throw error;
+  }
+  return parsed || {};
+}
+
+function getApiErrorCode(error, fallback = "request-failed") {
+  if (typeof error?.code === "string" && error.code) return error.code;
+  return fallback;
+}
+
+function getApiErrorMessage(error, fallback = "") {
+  if (typeof error?.apiMessage === "string" && error.apiMessage) return error.apiMessage;
+  if (typeof error?.message === "string" && error.message) return error.message;
+  return fallback;
+}
+
+function isClientApiError(error) {
+  return Number.isFinite(error?.status) && error.status >= 400 && error.status < 500;
 }
 
 function getChainIdNumber(chainId) {
@@ -367,8 +400,12 @@ export async function authenticateWithSiwe(options = {}) {
         expiresAt: typeof verifyResponse?.expiresAt === "string" ? verifyResponse.expiresAt : ""
       }
     };
-  } catch {
-    return { ok: false, reason: "auth-verify-failed" };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: getApiErrorCode(error, "auth-verify-failed"),
+      message: getApiErrorMessage(error, "Authentication verification failed.")
+    };
   }
 }
 
@@ -471,7 +508,15 @@ export async function submitScore(payload, options = {}) {
       synced: true,
       submissionId: remote?.submissionId || ""
     };
-  } catch {
+  } catch (error) {
+    if (isClientApiError(error)) {
+      return {
+        ok: false,
+        reason: getApiErrorCode(error, "submit-rejected"),
+        message: getApiErrorMessage(error, "Score submission rejected by backend."),
+        status: error.status
+      };
+    }
     return { ok: true, signature, chainId, wallet, mode: "signed-local", synced: false };
   }
 }
@@ -506,6 +551,7 @@ export async function claimMilestoneReward(payload, options = {}) {
   if (!connected.ok) return { ok: false, reason: connected.reason || "wallet-not-connected" };
   const wallet = connected.address;
   const chainId = connected.chainId;
+  const allowLegacyResign = options?.allowLegacyResign !== false;
   if (chainId !== BASE_CHAIN_ID) return { ok: false, reason: "wrong-network", chainId };
 
   const milestone = getMilestoneShape(payload);
@@ -598,14 +644,45 @@ export async function claimMilestoneReward(payload, options = {}) {
         retryable: false,
         milestoneId: milestone.milestoneId
       });
-    } catch {
+    } catch (error) {
+      const errorCode = getApiErrorCode(error, "sync-failed");
+      const errorMessage = getApiErrorMessage(error, "Claim sync failed.");
+      if (allowLegacyResign && (errorCode === "signature-invalid" || errorCode === "timestamp-invalid")) {
+        setMilestoneClaim(wallet, milestone.milestoneId, {
+          ...retryAttempt,
+          tokenId: "",
+          signature: "",
+          status: CLAIM_STATUS.failedSync,
+          mintStatus: retryAttempt.mintStatus || "pending",
+          lastSyncAt: new Date().toISOString(),
+          lastSyncError: "stale-local-claim"
+        });
+        return claimMilestoneReward(payload, { ...options, allowLegacyResign: false });
+      }
+
       const failedClaim = setMilestoneClaim(wallet, milestone.milestoneId, {
         ...retryAttempt,
         status: CLAIM_STATUS.failedSync,
         mintStatus: retryAttempt.mintStatus || "pending",
         lastSyncAt: new Date().toISOString(),
-        lastSyncError: "sync-failed"
+        lastSyncError: errorCode
       });
+      if (isClientApiError(error)) {
+        return {
+          ok: false,
+          reason: errorCode,
+          message: errorMessage,
+          status: error.status,
+          claim: failedClaim,
+          wallet,
+          chainId,
+          synced: false,
+          mode: "signed-local",
+          alreadyClaimed: true,
+          retryable: true,
+          milestoneId: milestone.milestoneId
+        };
+      }
       return buildClaimSyncResponse({
         claim: failedClaim,
         wallet,
@@ -715,14 +792,32 @@ export async function claimMilestoneReward(payload, options = {}) {
       retryable: false,
       milestoneId: milestone.milestoneId
     });
-  } catch {
+  } catch (error) {
+    const errorCode = getApiErrorCode(error, "sync-failed");
+    const errorMessage = getApiErrorMessage(error, "Claim sync failed.");
     const failedClaim = setMilestoneClaim(wallet, milestone.milestoneId, {
       ...claim,
       status: CLAIM_STATUS.failedSync,
       mintStatus: claim.mintStatus || "pending",
       lastSyncAt: new Date().toISOString(),
-      lastSyncError: "sync-failed"
+      lastSyncError: errorCode
     });
+    if (isClientApiError(error)) {
+      return {
+        ok: false,
+        reason: errorCode,
+        message: errorMessage,
+        status: error.status,
+        claim: failedClaim,
+        wallet,
+        chainId,
+        synced: false,
+        mode: "signed-local",
+        alreadyClaimed: false,
+        retryable: true,
+        milestoneId: milestone.milestoneId
+      };
+    }
     return buildClaimSyncResponse({
       claim: failedClaim,
       wallet,
