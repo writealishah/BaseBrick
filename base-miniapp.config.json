@@ -12,7 +12,7 @@
   "share": {
     "title": "BaseBrick | Win NFTs on Base",
     "textTemplate": "I scored {{score}} in BaseBrick while chasing milestone NFTs on Base Network. Beat this run.",
-    "image": "./assets/social-preview.svg"
+    "image": "./assets/app-thumbnail-1200x630.png"
   },
   "hooks": {
     "leaderboard": "device-local leaderboard active; verified global API can replace fetchLeaderboard",
@@ -25,7 +25,7 @@
   },
   "launchAssets": {
     "screenshotsDir": "./launch-assets",
-    "icon": "./assets/icon.svg",
-    "socialPreview": "./assets/social-preview.svg"
+    "icon": "./assets/icon-1024.png",
+    "socialPreview": "./assets/app-thumbnail-1200x630.png"
   }
 }
