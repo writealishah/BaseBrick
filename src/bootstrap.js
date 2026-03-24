@@ -1,4 +1,4 @@
-const BUILD_ID = "20260324b";
+const BUILD_ID = "20260325a";
 
 function mergeRuntimeConfig(patch) {
   if (!patch || typeof patch !== "object") return;
