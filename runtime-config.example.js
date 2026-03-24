@@ -1,5 +1,6 @@
 window.MONOBRICK_RUNTIME = {
   apiBaseUrl: "https://api.example.com",
+  builderCode: "bc_mzdljr5e",
   walletAdapterUrl: "/wallet-adapter.js",
   walletAdapterRequired: true,
   allowLegacyInjected: false,
