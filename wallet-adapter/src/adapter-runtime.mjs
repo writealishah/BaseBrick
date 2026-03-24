@@ -7,7 +7,7 @@ import {
   switchChain,
   watchAccount
 } from "@wagmi/core";
-import { baseAccount, injected } from "@wagmi/connectors";
+import { baseAccount, coinbaseWallet, injected } from "@wagmi/connectors";
 import { http } from "viem";
 import { base } from "viem/chains";
 
@@ -54,6 +54,17 @@ try {
   // Keep injected fallback available when Base Account connector is unavailable.
 }
 
+try {
+  connectors.push(
+    coinbaseWallet({
+      appName: runtime.appName,
+      preference: "all"
+    })
+  );
+} catch {
+  // Keep injected fallback available when Coinbase Wallet connector is unavailable.
+}
+
 connectors.push(injected({ shimDisconnect: true }));
 
 const wagmiConfig = createConfig({
@@ -68,7 +79,7 @@ function findConnectorById(connectorId) {
   return connectors.find((connector) => connector?.id === connectorId) || null;
 }
 
-async function ensureConnected(preferred = "") {
+async function ensureConnected({ preferred = "", allowPrompt = false } = {}) {
   const current = getAccount(wagmiConfig);
   if (current?.address) return normalizeAccountPayload(current);
 
@@ -80,6 +91,7 @@ async function ensureConnected(preferred = "") {
 
   const next = getAccount(wagmiConfig);
   if (next?.address) return normalizeAccountPayload(next);
+  if (!allowPrompt) return { address: "", chainId: "" };
 
   const attempts = [];
   if (preferred) {
@@ -108,7 +120,7 @@ async function getBaseAccountProvider() {
   const connector = findConnectorById("baseAccount");
   if (!connector) return null;
 
-  const connected = await ensureConnected("baseAccount");
+  const connected = await ensureConnected({ preferred: "baseAccount", allowPrompt: false });
   if (!connected.address) return null;
 
   if (connector.provider && typeof connector.provider.request === "function") {
@@ -124,7 +136,7 @@ async function getBaseAccountProvider() {
 }
 
 async function connectAdapter() {
-  const connected = await ensureConnected("baseAccount");
+  const connected = await ensureConnected({ preferred: "baseAccount", allowPrompt: true });
   if (!connected.address) {
     return { ok: false, reason: "wallet-connect-failed" };
   }
@@ -138,13 +150,13 @@ async function getConnectedAdapter() {
     return { ok: true, ...payload };
   }
 
-  const connected = await ensureConnected();
+  const connected = await ensureConnected({ allowPrompt: false });
   if (!connected.address) return { ok: false, reason: "account-missing" };
   return { ok: true, address: connected.address, chainId: connected.chainId };
 }
 
 async function ensureBaseNetworkAdapter() {
-  const connected = await ensureConnected();
+  const connected = await ensureConnected({ allowPrompt: false });
   if (!connected.address) return { ok: false, reason: "account-missing", chainId: "" };
   if (connected.chainId === BASE_CHAIN_HEX) {
     return { ok: true, chainId: connected.chainId };
@@ -167,7 +179,7 @@ async function ensureBaseNetworkAdapter() {
 }
 
 async function signMessageAdapter({ address, message }) {
-  const connected = await ensureConnected();
+  const connected = await ensureConnected({ allowPrompt: true });
   if (!connected.address) return "";
   const accountAddress = typeof address === "string" && address ? address : connected.address;
   return signMessage(wagmiConfig, {
@@ -267,4 +279,3 @@ window.dispatchEvent(
     detail: { mode: "wagmi-viem-base-account" }
   })
 );
-
