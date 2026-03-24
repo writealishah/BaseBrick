@@ -13,6 +13,7 @@
   window.MONOBRICK_RUNTIME = {
     ...(window.MONOBRICK_RUNTIME || {}),
     apiBaseUrl,
+    builderCode: "bc_mzdljr5e",
     walletAdapterUrl: "/wallet-adapter.js",
     walletAdapterRequired,
     allowLegacyInjected,
