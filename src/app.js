@@ -17,7 +17,7 @@ import {
   setDailyBest,
   setProfile,
   setSoundMuted
-} from "./storage.js?v=20260325b";
+} from "./storage.js?v=20260325c";
 import {
   authenticateWithSiwe,
   claimMilestoneReward,
@@ -32,7 +32,7 @@ import {
   shareScore,
   submitScore,
   watchWallet
-} from "./base-hooks.js?v=20260325b";
+} from "./base-hooks.js?v=20260325c";
 
 function hash(text) {
   let h = 0;
@@ -172,6 +172,18 @@ function getFailureMessage(result, fallback) {
   const reason = formatFailureReason(result?.reason || "");
   if (!reason) return fallback;
   return `${fallback} (${reason}).`;
+}
+
+function getWalletReasonMessage(reason = "", fallback = "Wallet action failed.") {
+  const key = formatFailureReason(reason);
+  if (key === "wallet-adapter-required") {
+    return "Wallet adapter missing. Deploy wallet-adapter.js and reload.";
+  }
+  if (key === "wallet-connect-failed") return "Wallet connection was not completed.";
+  if (key === "wallet-missing") return "No wallet was detected on this device.";
+  if (key === "switch-rejected") return "Network switch was rejected.";
+  if (key === "account-missing") return "No wallet account is available.";
+  return key && key !== "unknown-error" ? `${fallback} (${key}).` : fallback;
 }
 
 function isPracticeCheckpointRun(result) {
@@ -442,9 +454,13 @@ function updateProfileUI() {
   const connected = Boolean(state.profile.address);
   const chainText = connected ? (isBaseChain(state.profile.chainId) ? "Base" : `Chain ${state.profile.chainId || "?"}`) : "No wallet";
   const walletModeTag = state.runtime.walletMode ? ` via ${state.runtime.walletMode}` : "";
-  els.profileStatus.textContent = connected
-    ? `Connected: ${shortAddress(state.profile.address)} (${chainText}${walletModeTag})`
-    : "Guest mode active";
+  if (connected) {
+    els.profileStatus.textContent = `Connected: ${shortAddress(state.profile.address)} (${chainText}${walletModeTag})`;
+  } else if (state.runtime.walletMode === "adapter-required") {
+    els.profileStatus.textContent = "Guest mode active. Wallet adapter is required for connect/auth actions.";
+  } else {
+    els.profileStatus.textContent = "Guest mode active";
+  }
   els.walletChip.textContent = connected ? shortAddress(state.profile.address) : "Guest";
   els.profileDisplay.textContent = `Current: ${displayName}`;
   if (!connected) {
@@ -455,7 +471,11 @@ function updateProfileUI() {
 
   const remoteActionsEnabled = state.runtime.hasSubmitScore || state.runtime.hasClaimReward;
   const needsVerifiedAuth = remoteActionsEnabled && state.runtime.hasAuthVerify && state.runtime.hasAuthNonce;
-  if (!connected) {
+  if (state.runtime.walletMode === "adapter-required") {
+    els.authStatus.textContent = "Auth: wallet adapter missing";
+    els.buttons.authenticate.textContent = "Wallet Adapter Required";
+    els.buttons.authenticate.disabled = true;
+  } else if (!connected) {
     els.authStatus.textContent = "Auth: connect wallet first";
     els.buttons.authenticate.textContent = "Authenticate (SIWE)";
     els.buttons.authenticate.disabled = true;
@@ -745,7 +765,7 @@ async function connectWalletFlow() {
   try {
     const connected = await connectWallet();
     if (!connected.ok) {
-      toast("Wallet connection failed");
+      toast(getWalletReasonMessage(connected.reason, "Wallet connection failed"));
       return;
     }
     await applyWalletState(connected);
@@ -762,7 +782,7 @@ async function switchBaseFlow() {
   try {
     const switched = await ensureBaseNetwork();
     if (!switched.ok) {
-      toast("Could not switch to Base");
+      toast(getWalletReasonMessage(switched.reason, "Could not switch to Base"));
       return;
     }
     persistProfile({ chainId: switched.chainId });
