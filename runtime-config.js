@@ -7,14 +7,20 @@
   const configuredApiBase =
     typeof window.BASEBRICK_API_BASE_URL === "string" ? window.BASEBRICK_API_BASE_URL.trim() : "";
   const apiBaseUrl = configuredApiBase || metaApiBase || (isLocalHost ? "http://localhost:8787" : "");
+  const walletAdapterRequired = !isLocalHost;
+  const allowLegacyInjected = isLocalHost;
 
   window.MONOBRICK_RUNTIME = {
     ...(window.MONOBRICK_RUNTIME || {}),
     apiBaseUrl,
     walletAdapterUrl: "/wallet-adapter.js",
+    walletAdapterRequired,
+    allowLegacyInjected,
     walletAdapter: {
       appName: "BaseBrick",
-      rpcUrl: "https://mainnet.base.org"
+      rpcUrl: "https://mainnet.base.org",
+      required: walletAdapterRequired,
+      allowLegacyInjected
     },
     reward: {
       chainId: "0x2105",
