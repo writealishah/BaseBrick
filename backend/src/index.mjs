@@ -730,17 +730,18 @@ const server = http.createServer(async (request, response) => {
         return;
       }
 
+      const walletRaw = String(body.wallet || "");
+      const wallet = walletRaw.toLowerCase();
       const message = buildSubmissionMessage({
         score: Math.floor(body.score),
         stage: Math.floor(body.stage),
         maxCombo: Math.floor(body.maxCombo),
-        playerName: String(body.playerName || "").trim(),
-        wallet: String(body.wallet).toLowerCase(),
+        playerName: String(body.playerName || ""),
+        wallet: walletRaw,
         dailySeed: String(body.dailySeed),
         when: String(body.when)
       });
       const signature = String(body.signature);
-      const wallet = String(body.wallet).toLowerCase();
       const signatureOk = await verifyWalletMessage({ wallet, message, signature });
       if (!signatureOk) {
         sendError(response, 400, "signature-invalid", "Submission signature verification failed.");
@@ -823,7 +824,8 @@ const server = http.createServer(async (request, response) => {
         return;
       }
 
-      const wallet = String(body.wallet).toLowerCase();
+      const walletRaw = String(body.wallet || "");
+      const wallet = walletRaw.toLowerCase();
       const milestoneId = normalizeMilestoneId(body?.milestoneId);
       const milestoneStage = Number(MILESTONE_STAGE_MAP[milestoneId] || 0);
       if (config.requireVerifiedScoreForClaim && !stateStore.hasEligibleSubmission(wallet, milestoneStage)) {
@@ -860,14 +862,14 @@ const server = http.createServer(async (request, response) => {
       }
 
       const message = buildClaimMessage({
-        wallet,
-        playerName: String(body.playerName).trim(),
+        wallet: walletRaw,
+        playerName: String(body.playerName),
         score: Math.floor(body.score),
         stage: Math.floor(body.stage),
         milestoneId,
         milestoneStage: milestoneStage,
-        milestoneLabel: String(body.milestoneLabel).trim(),
-        tokenId: String(body.tokenId).trim(),
+        milestoneLabel: String(body.milestoneLabel),
+        tokenId: String(body.tokenId),
         when: String(body.when)
       });
       const signature = String(body.signature);
