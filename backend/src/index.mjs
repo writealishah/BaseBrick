@@ -19,6 +19,16 @@ const rateLimiter = createRateLimiter({
   limitByKey: config.rateLimitSubmitPerIp
 });
 
+let signatureVerifyClient = null;
+try {
+  signatureVerifyClient = createPublicClient({
+    chain: base,
+    transport: viemHttp(config.baseRpcUrl || "https://mainnet.base.org")
+  });
+} catch {
+  signatureVerifyClient = null;
+}
+
 const REWARD_CONTRACT_ABI = [
   {
     type: "function",
@@ -343,6 +353,23 @@ function buildClaimMessage(payload) {
 }
 
 async function verifyWalletMessage({ wallet, message, signature }) {
+  if (!isAddress(wallet)) return false;
+  if (typeof message !== "string" || !message) return false;
+  if (typeof signature !== "string" || !signature) return false;
+
+  if (signatureVerifyClient) {
+    try {
+      const valid = await signatureVerifyClient.verifyMessage({
+        address: wallet,
+        message,
+        signature
+      });
+      if (valid) return true;
+    } catch {
+      // Fall through to local verification.
+    }
+  }
+
   try {
     const valid = await verifyMessage({
       address: wallet,
@@ -552,6 +579,10 @@ const server = http.createServer(async (request, response) => {
         env: config.env,
         network: config.network,
         chainId: normalizeChainId(config.baseChainId),
+        authVerifier: {
+          rpcUrl: config.baseRpcUrl,
+          smartAccountCapable: Boolean(signatureVerifyClient)
+        },
         reward: rewardRuntimeInfo(),
         now: nowIso()
       });
