@@ -10,7 +10,9 @@ The main app will use this adapter when runtime config sets `walletAdapterUrl`.
 
 - keeps gameplay guest-first
 - upgrades wallet/auth actions to wagmi + viem
-- supports Base Account SIWE (`wallet_connect` + `signInWithEthereum`) plus injected fallback
+- supports Base Account SIWE (`wallet_connect` + `signInWithEthereum`)
+- includes connector stack: `baseAccount` -> `coinbaseWallet` -> `injected`
+- avoids wallet popups during passive startup checks (`getConnected` is silent)
 
 ## Build
 
