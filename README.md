@@ -2,6 +2,25 @@
 
 BaseBrick is a standalone Breakout-style mini app where players clear stages and win milestone NFT rewards on Base Network.
 
+## Base Feature Readiness (March 24, 2026)
+
+Implemented in this repo:
+
+- Standard web app flow (no Farcaster SDK dependency)
+- Wallet adapter powered by wagmi + viem + Base Account connector fallback path
+- SIWE-compatible auth flow for verified actions
+- Guest-first gameplay with delayed wallet/auth prompts
+- Production reward contract deployed and verified on Base mainnet:
+  - `0xEACB5c472ad45D97f06C138833507dE6168A1A75`
+  - https://basescan.org/address/0xEACB5c472ad45D97f06C138833507dE6168A1A75#code
+- Mobile-safe layout, safe-area handling, and clear post-run actions
+
+Still external (not solved by static frontend code alone):
+
+- Base.dev listing metadata completion (screenshots/category/tagline/builder code)
+- Production backend deployment URL and operational monitoring
+- Optional notifications via Base.dev API (when available for your app use case)
+
 ## Product Goals
 
 - Instant onboarding and fast retries
@@ -163,6 +182,7 @@ Included:
 ## Onchain Reward Spec
 
 - [`docs/onchain-reward-architecture.md`](./docs/onchain-reward-architecture.md)
+- [`docs/live-deploy-checklist.md`](./docs/live-deploy-checklist.md)
 
 ## Wallet Modernization Spec
 
