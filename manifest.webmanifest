@@ -3,8 +3,8 @@
   "short_name": "BaseBrick",
   "description": "Play BaseBrick and win milestone NFTs on Base Network with fast arcade runs and instant retries.",
   "id": "/",
-  "start_url": ".",
-  "scope": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "display_override": ["standalone"],
   "orientation": "portrait",
@@ -13,7 +13,19 @@
   "categories": ["games", "entertainment"],
   "icons": [
     {
-      "src": "./assets/icon.svg",
+      "src": "/assets/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
